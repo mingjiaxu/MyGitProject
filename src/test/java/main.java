@@ -1,7 +1,11 @@
+import BaseFunc.GetRndBigintger;
+import BaseFunc.PublicParams2List;
+import BaseFunc.SecretParamsBean2List;
 import Client.CLCheck;
 import Client.GetCommitAndSignature;
 import Client.GetSecretParams;
 import JavaBean.CommitAndSignature;
+import JavaBean.PublicParams;
 import JavaBean.SecretParams;
 import JavaBean.SignatureS2CParams;
 import Sever.CLAlgorithm;
@@ -10,6 +14,7 @@ import Sever.SignatureVerify;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -35,6 +40,7 @@ public class main {
             //更新t1
         secretParams.setT1(secretParams.getT1().add(signatureS2CParams.getT2()));
         System.out.println(CLCheck.check(secretParams,signatureS2CParams));
+
 
 
     }
