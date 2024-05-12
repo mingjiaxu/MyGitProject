@@ -41,25 +41,39 @@ public class main {
         secretParams.setT1(secretParams.getT1().add(signatureS2CParams.getT2()));
         System.out.println(CLCheck.check(secretParams,signatureS2CParams));
 
-//        Random rnd = new Random();
-//        BigInteger w1 = new BigInteger(100,rnd);
-//        BigInteger r = new BigInteger(100,rnd);
-//        BigInteger K = new BigInteger("1021");
-//        BigInteger A1 = signatureS2CParams.getA().multiply(PublicParams.h.modPow(w1,PublicParams.n)).mod(PublicParams.n);
-//        BigInteger T = PublicParams.b1.modPow(secretParams.getT1(),PublicParams.sigma).multiply(PublicParams.b2.modPow(r,PublicParams.sigma)).mod(PublicParams.sigma);
-//        BigInteger ic = secretParams.getI().add(secretParams.getE().add(secretParams.getD()).modInverse(K)).mod(K);
-//        BigInteger SN = PublicParams.b1.modPow(ic.add(secretParams.getS().modInverse(K)),PublicParams.sigma).multiply(PublicParams.b2.modPow(ic.add(secretParams.getT1()).modInverse(K),PublicParams.sigma)).mod(PublicParams.sigma);
-//        BigInteger D = PublicParams.a;
-//        ArrayList<BigInteger>  ppbl= PublicParams2List.convert();
-//        ArrayList<BigInteger> spbl = SecretParamsBean2List.convert(secretParams);
-//        for (int i = 2; i < 8; i++) {
-//            D = D.multiply(ppbl.get(i).modPow(spbl.get(i-1),PublicParams.n));
-//        }
-//        D.multiply(PublicParams.h.modPow(secretParams.getW().add(signatureS2CParams.getY().multiply(w1)),PublicParams.n)).mod(PublicParams.n);
-//
-//        BigInteger alpha = (ic.add(secretParams.getT1()).modInverse(K)).multiply(ic.add(secretParams.getS()));
-//        BigInteger beta = (ic.add(secretParams.getS()).modInverse(K)).multiply(ic.add(secretParams.getT1()));
-//        BigInteger  m = ic.multiply(secretParams.getE()).subtract(secretParams.getI().multiply(secretParams.getE()));
+
+        BigInteger w1 = GetRndBigintger.generate(100);
+        BigInteger r = GetRndBigintger.generate(100);
+        BigInteger K = PublicParams.k;
+
+        BigInteger A1 = signatureS2CParams.getA().multiply(PublicParams.h.modPow(w1,PublicParams.n)).mod(PublicParams.n);
+        BigInteger T = PublicParams.b1.modPow(secretParams.getT1(),PublicParams.sigma).multiply(PublicParams.b2.modPow(r,PublicParams.sigma)).mod(PublicParams.sigma);
+        BigInteger ic = secretParams.getI().add(secretParams.getE().add(secretParams.getD()).modInverse(K)).mod(K);
+        BigInteger SN = PublicParams.b1.modPow(ic.add(secretParams.getS().modInverse(K)),PublicParams.sigma).multiply(PublicParams.b2.modPow(ic.add(secretParams.getT1()).modInverse(K),PublicParams.sigma)).mod(PublicParams.sigma);
+        BigInteger D = PublicParams.a;
+        ArrayList<BigInteger>  ppbl= PublicParams2List.convert();
+        ArrayList<BigInteger> spbl = SecretParamsBean2List.convert(secretParams);
+        for (int i = 2; i < 8; i++) {
+            D = D.multiply(ppbl.get(i).modPow(spbl.get(i-1),PublicParams.n));
+        }
+        D.multiply(PublicParams.h.modPow(secretParams.getW().add(signatureS2CParams.getY().multiply(w1)),PublicParams.n)).mod(PublicParams.n);
+
+        BigInteger alpha = (ic.add(secretParams.getT1()).modInverse(K)).multiply(ic.add(secretParams.getS()));
+        BigInteger beta = (ic.add(secretParams.getS()).modInverse(K)).multiply(ic.add(secretParams.getT1()));
+        BigInteger  m = ic.multiply(secretParams.getE()).subtract(secretParams.getI().multiply(secretParams.getE()));
+        //生成秘密参数列表，公共参数列表
+        //根据秘密参数列表生成随机数列表
+        //计算对应挑战
+        //重复计算7次，计算出所有挑战
+
+        //将挑战列表进行哈希 获取摘要c
+        //计算所有的S
+        //拼接出SPK2
+
+        //验证SPK2
+
+
+
 //        //生成同等长度随机参数，用于隐藏私有参数
 //
 //        ArrayList<BigInteger> arrayLists = new ArrayList<BigInteger>();

@@ -16,7 +16,8 @@ public class CommitAndSignature {
     private BigInteger j1;
     private BigInteger j2;
     private ArrayList<BigInteger> SPK1;
-
+    public CommitAndSignature(){
+    }
     public BigInteger getJ1() {
         return j1;
     }

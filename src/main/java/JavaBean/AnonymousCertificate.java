@@ -4,19 +4,20 @@ import java.math.BigInteger;
 
 /**
  * @projectName: MyProject
- * @package: Sever
- * @className: SignatureS2CParams
+ * @package: JavaBean
+ * @className: AnonymousCertificate
  * @author: xjm
- * @description: TODO
- * @date: 5/10/2024 4:01 PM
+ * @description: 存放匿名证书
+ * @date: 5/13/2024 12:01 AM
  * @version: 1.0
  */
-public class SignatureS2CParams {
+public class AnonymousCertificate extends SecretParams{
     private BigInteger A;
     private BigInteger y;
-    private BigInteger t2;
-    public SignatureS2CParams(){
+
+    public AnonymousCertificate() {
     }
+
     public BigInteger getA() {
         return A;
     }
@@ -31,13 +32,5 @@ public class SignatureS2CParams {
 
     public void setY(BigInteger y) {
         this.y = y;
-    }
-
-    public BigInteger getT2() {
-        return t2;
-    }
-
-    public void setT2(BigInteger t2) {
-        this.t2 = t2;
     }
 }
