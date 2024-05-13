@@ -4,14 +4,13 @@ import BaseFunc.GetHash;
 import BaseFunc.GetRndBigintger;
 import BaseFunc.PublicParams2List;
 import BaseFunc.SecretParamsBean2List;
-import JavaBean.CommitAndSignature;
+import JavaBean.CommitmentAndSignature;
 import JavaBean.PublicParams;
 import JavaBean.SecretParams;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * @projectName: MyProject
@@ -22,9 +21,9 @@ import java.util.Objects;
  * @date: 5/10/2024 9:25 PM
  * @version: 1.0
  */
-public class GetCommitAndSignature {
-    public static CommitAndSignature generate(SecretParams secretParams){
-        CommitAndSignature cas = new CommitAndSignature();
+public class GetCommitmentAndSignature {
+    public static CommitmentAndSignature generate(SecretParams secretParams){
+        CommitmentAndSignature cas = new CommitmentAndSignature();
 
         BigInteger j1 = PublicParams.b.modPow(secretParams.getT1(),PublicParams.sigma);
         cas.setJ1(j1);

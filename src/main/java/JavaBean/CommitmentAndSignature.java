@@ -12,11 +12,11 @@ import java.util.ArrayList;
  * @date: 5/10/2024 9:22 PM
  * @version: 1.0
  */
-public class CommitAndSignature {
+public class CommitmentAndSignature {
     private BigInteger j1;
     private BigInteger j2;
     private ArrayList<BigInteger> SPK1;
-    public CommitAndSignature(){
+    public CommitmentAndSignature(){
     }
     public BigInteger getJ1() {
         return j1;
