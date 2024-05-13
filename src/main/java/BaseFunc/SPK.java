@@ -23,13 +23,13 @@ public class SPK {
      * @description 挑战计算模式一    型如 ax^rx *as ^rs....的挑战
      * @date 5/12/2024 8:56 PM
      */
-    public static BigInteger caculateT_P1(ArrayList<BigInteger> baseNumList,ArrayList<BigInteger> exponentList,BigInteger m) throws Exception {
-        if (baseNumList == null)
-            throw new Exception("baseNums为空");
-        else if(exponentList == null)
-            throw new Exception("baseNums为空");
-        else if(baseNumList.size()!= exponentList.size())
-            throw new Exception("底数列表与指数列表长度不相等");
+    public static BigInteger caculateT_P1(ArrayList<BigInteger> baseNumList,ArrayList<BigInteger> exponentList,BigInteger m){
+//        if (baseNumList == null)
+//            throw new Exception("baseNums为空");
+//        else if(exponentList == null)
+//            throw new Exception("baseNums为空");
+//        else if(baseNumList.size()!= exponentList.size())
+//            throw new Exception("底数列表与指数列表长度不相等");
         BigInteger T = BigInteger.ONE;
         for (int i = 0; i < baseNumList.size(); i++) {
             T = T.multiply(baseNumList.get(i).modPow(exponentList.get(i),m));
@@ -45,18 +45,18 @@ public class SPK {
      * @description 挑战计算模式二 型如  A^ry/(ax^x*as^s*....)的挑战
      * @date 5/12/2024 9:22 PM
      */
-    public static BigInteger caculateT_P2(ArrayList<BigInteger> baseNumList,ArrayList<BigInteger> exponentList,BigInteger m) throws Exception {
-        if (baseNumList == null)
-            throw new Exception("baseNumList为空");
-        else if(exponentList == null)
-            throw new Exception("exponentList为空");
-        else if(baseNumList.size()!= exponentList.size())
-            throw new Exception("baseNumList与exponentList长度不相等");
+    public static BigInteger caculateT_P2(ArrayList<BigInteger> baseNumList,ArrayList<BigInteger> exponentList,BigInteger m){
+//        if (baseNumList == null)
+//            throw new Exception("baseNumList为空");
+//        else if(exponentList == null)
+//            throw new Exception("exponentList为空");
+//        else if(baseNumList.size()!= exponentList.size())
+//            throw new Exception("baseNumList与exponentList长度不相等");
         BigInteger T = baseNumList.get(0).modPow(exponentList.get(0),m);
         ArrayList<BigInteger> baseNumSubList = new ArrayList<BigInteger>();
         ArrayList<BigInteger> exponentSubList = new ArrayList<BigInteger>();
-        baseNumSubList.addAll(1,baseNumList);
-        exponentSubList.addAll(1,exponentList);
+        baseNumSubList.addAll(baseNumList.subList(1,baseNumList.size()));
+        exponentSubList.addAll(exponentList.subList(1,exponentList.size()));
         BigInteger invPart = caculateT_P1(baseNumSubList,exponentSubList,m).modInverse(m);
         return T.parallelMultiply(invPart).mod(m);
     }
@@ -84,15 +84,15 @@ public class SPK {
      * @description 计算S的集合
      * @date 5/12/2024 9:59 PM
      */
-    public static ArrayList<BigInteger> caculateSList(ArrayList<BigInteger> rList,ArrayList<BigInteger> secParamList,BigInteger c) throws Exception {
-        if(rList==null){
-            throw new Exception("rList为空");
-        }
-        else if(secParamList ==null){
-            throw new Exception("secParamList为空");
-        } else if (rList.size()!=secParamList.size()) {
-            throw new Exception("rList与secParamList长度不相等");
-        }
+    public static ArrayList<BigInteger> caculateSList(ArrayList<BigInteger> rList,ArrayList<BigInteger> secParamList,BigInteger c){
+//        if(rList==null){
+//            throw new Exception("rList为空");
+//        }
+//        else if(secParamList ==null){
+//            throw new Exception("secParamList为空");
+//        } else if (rList.size()!=secParamList.size()) {
+//            throw new Exception("rList与secParamList长度不相等");
+//        }
         ArrayList<BigInteger> sList  = new ArrayList<BigInteger>();
         for (int i = 0; i < rList.size() ; i++) {
             sList.add(rList.get(i).subtract(c.parallelMultiply(secParamList.get(i))));
@@ -106,9 +106,9 @@ public class SPK {
  * @description 为所有的秘密参数生成等长度的随机参数
  * @date 5/12/2024 10:04 PM
  */
-    public static ArrayList<BigInteger> generateRList(ArrayList<BigInteger> secParamList) throws Exception {
-        if(secParamList==null)
-            throw new Exception("secParamList为空");
+    public static ArrayList<BigInteger> generateRList(ArrayList<BigInteger> secParamList){
+//        if(secParamList==null)
+//            throw new Exception("secParamList为空");
 
         ArrayList<BigInteger> rList = new ArrayList<BigInteger>();
         for (int i = 0; i < secParamList.size() ; i++) {

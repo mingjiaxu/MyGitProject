@@ -1,21 +1,12 @@
-import BaseFunc.GetRndBigintger;
-import BaseFunc.PublicParams2List;
-import BaseFunc.SecretParamsBean2List;
-import Client.CLCheck;
-import Client.GetCommitAndSignature;
-import Client.GetSecretParams;
-import JavaBean.CommitAndSignature;
-import JavaBean.PublicParams;
-import JavaBean.SecretParams;
-import JavaBean.SignatureS2CParams;
-import Sever.CLAlgorithm;
+import BaseFunc.*;
+import Client.*;
+import JavaBean.*;
 import Sever.GetSignatureS2CParams;
 import Sever.SignatureVerify;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * @projectName: MyProject
@@ -29,7 +20,7 @@ import java.util.Random;
 public class main {
     public static void main(String[] args) throws NoSuchAlgorithmException {
         SecretParams secretParams = GetSecretParams.generate();
-        CommitAndSignature cas = GetCommitAndSignature.generate(secretParams);
+        CommitmentAndSignature cas = GetCommitmentAndSignature.generate(secretParams);
         //服务器
         //用户传递Pku j1 j2 SPK1 给服务器验证签名
         System.out.println(SignatureVerify.verify(secretParams.getPku(),cas));
@@ -41,125 +32,84 @@ public class main {
         secretParams.setT1(secretParams.getT1().add(signatureS2CParams.getT2()));
         System.out.println(CLCheck.check(secretParams,signatureS2CParams));
 
-
+        AnonymousCertificate ac = GetAnonymousCertificate.generate(secretParams,signatureS2CParams);
         BigInteger w1 = GetRndBigintger.generate(100);
         BigInteger r = GetRndBigintger.generate(100);
-        BigInteger K = PublicParams.k;
 
-        BigInteger A1 = signatureS2CParams.getA().multiply(PublicParams.h.modPow(w1,PublicParams.n)).mod(PublicParams.n);
-        BigInteger T = PublicParams.b1.modPow(secretParams.getT1(),PublicParams.sigma).multiply(PublicParams.b2.modPow(r,PublicParams.sigma)).mod(PublicParams.sigma);
-        BigInteger ic = secretParams.getI().add(secretParams.getE().add(secretParams.getD()).modInverse(K)).mod(K);
-        BigInteger SN = PublicParams.b1.modPow(ic.add(secretParams.getS().modInverse(K)),PublicParams.sigma).multiply(PublicParams.b2.modPow(ic.add(secretParams.getT1()).modInverse(K),PublicParams.sigma)).mod(PublicParams.sigma);
-        BigInteger D = PublicParams.a;
-        ArrayList<BigInteger>  ppbl= PublicParams2List.convert();
-        ArrayList<BigInteger> spbl = SecretParamsBean2List.convert(secretParams);
-        for (int i = 2; i < 8; i++) {
-            D = D.multiply(ppbl.get(i).modPow(spbl.get(i-1),PublicParams.n));
-        }
-        D.multiply(PublicParams.h.modPow(secretParams.getW().add(signatureS2CParams.getY().multiply(w1)),PublicParams.n)).mod(PublicParams.n);
+        KnowledgeCommitment kc  = GetKnowledgeCommitment.generate(ac,w1,r);
 
-        BigInteger alpha = (ic.add(secretParams.getT1()).modInverse(K)).multiply(ic.add(secretParams.getS()));
-        BigInteger beta = (ic.add(secretParams.getS()).modInverse(K)).multiply(ic.add(secretParams.getT1()));
-        BigInteger  m = ic.multiply(secretParams.getE()).subtract(secretParams.getI().multiply(secretParams.getE()));
+        BigInteger alpha = kc.getIc().add(ac.getS()).multiply((kc.getIc().add(ac.getT1())).modInverse(PublicParams.k));
+        BigInteger beta = kc.getIc().add(ac.getT1()).multiply((kc.getIc().add(ac.getS())).modInverse(PublicParams.k));
+        BigInteger m = kc.getIc().multiply(ac.getE()).subtract(ac.getI().multiply(ac.getE()).add(BigInteger.ONE)).divide(PublicParams.k);
+
+        ArrayList<BigInteger> TList = new ArrayList<>();
+
         //生成秘密参数列表，公共参数列表
+        ArrayList<BigInteger> secParamList1 = Params2List.convert(ac.getY(),ac.getX(),ac.getS(),ac.getT1(),ac.getI(),ac.getE(),ac.getD(),ac.getW().add(ac.getY().multiply(w1)));
+        ArrayList<BigInteger> pubParamList1 = Params2List.convert(kc.getA1(),PublicParams.ax,PublicParams.as,PublicParams.at,PublicParams.ai,PublicParams.ae,PublicParams.ad,PublicParams.h);
         //根据秘密参数列表生成随机数列表
+        ArrayList<BigInteger> rList1 = SPK.generateRList(secParamList1);
         //计算对应挑战
+
+        TList.add(SPK.caculateT_P2(pubParamList1,rList1,PublicParams.n));
         //重复计算7次，计算出所有挑战
+
+        ArrayList<BigInteger> secParamList2 =Params2List.convert(ac.getT1(),r);
+        ArrayList<BigInteger> pubParamList2 = Params2List.convert(PublicParams.b1,PublicParams.b2);
+        ArrayList<BigInteger> rList2 = SPK.generateRList(secParamList2);
+        TList.add(SPK.caculateT_P1(pubParamList2,rList2,PublicParams.sigma));
+
+        ArrayList<BigInteger> secParamList3 =Params2List.convert(ac.getS(),alpha);
+        ArrayList<BigInteger> pubParamList3 = Params2List.convert(kc.getSN(),PublicParams.b2);
+        ArrayList<BigInteger> rList3 = SPK.generateRList(secParamList3);
+        TList.add(SPK.caculateT_P2(pubParamList3,rList3,PublicParams.sigma));
+
+        ArrayList<BigInteger> secParamList4 =Params2List.convert(ac.getT1(),beta);
+        ArrayList<BigInteger> pubParamList4 = Params2List.convert(kc.getSN(),PublicParams.b1);
+        ArrayList<BigInteger> rList4 = SPK.generateRList(secParamList4);
+        TList.add(SPK.caculateT_P2(pubParamList4,rList4,PublicParams.sigma));
+
+        ArrayList<BigInteger> secParamList5 =Params2List.convert(kc.getIc().multiply(ac.getE()),ac.getI().multiply(ac.getE()),PublicParams.k.multiply(m));
+        ArrayList<BigInteger> pubParamList5 = Params2List.convert(PublicParams.a,PublicParams.a,PublicParams.a);
+        ArrayList<BigInteger> rList5 = SPK.generateRList(secParamList5);
+        TList.add(SPK.caculateT_P2(pubParamList5,rList5,PublicParams.n));
+
+        BigInteger ec = secretParams.getE().add(secretParams.getD());
+        ArrayList<BigInteger> secParamList6 = Params2List.convert(ec,secretParams.getE(),secretParams.getD());
+        ArrayList<BigInteger> pubParamList6 = Params2List.convert(PublicParams.b,PublicParams.b,PublicParams.b);
+        ArrayList<BigInteger> rList6 = SPK.generateRList(secParamList6);
+        TList.add(SPK.caculateT_P2(pubParamList6,rList6,PublicParams.sigma));
+
+        ArrayList<BigInteger> secParamList7 = Params2List.convert(ac.getX(),ac.getS(),ac.getT1(),ac.getI(),ac.getE(),ac.getD(),ac.getW().add(ac.getY().multiply(w1)));
+        ArrayList<BigInteger> pubParamList7 = Params2List.convert(PublicParams.ax,PublicParams.as,PublicParams.at,PublicParams.ai,PublicParams.ae,PublicParams.ad,PublicParams.h);
+        ArrayList<BigInteger> rList7 = SPK.generateRList(secParamList7);
+        TList.add(SPK.caculateT_P1(pubParamList7,rList7,PublicParams.n));
+
+
+        BigInteger c = SPK.caculateHashC(TList);
+        ArrayList<BigInteger> rList = new ArrayList<>();
+        ArrayList<BigInteger> secParamList = new ArrayList<>();
+        rList.addAll(rList1);
+        rList.addAll(rList2);
+        rList.addAll(rList3);
+        rList.addAll(rList4);
+        rList.addAll(rList5);
+        rList.addAll(rList6);
+        rList.addAll(rList7);
+        secParamList.addAll(secParamList1);
+        secParamList.addAll(secParamList2);
+        secParamList.addAll(secParamList3);
+        secParamList.addAll(secParamList4);
+        secParamList.addAll(secParamList5);
+        secParamList.addAll(secParamList6);
+        secParamList.addAll(secParamList7);
+        ArrayList<BigInteger> sList = SPK.caculateSList(rList,secParamList,c);
 
         //将挑战列表进行哈希 获取摘要c
         //计算所有的S
         //拼接出SPK2
 
         //验证SPK2
-
-
-
-//        //生成同等长度随机参数，用于隐藏私有参数
-//
-//        ArrayList<BigInteger> arrayLists = new ArrayList<BigInteger>();
-//        ArrayList<BigInteger> arrayListr = new ArrayList<BigInteger>();
-//        ArrayList<BigInteger> arrayListT = new ArrayList<BigInteger>();
-//        for (int i = 0; i < 6; i++) {
-//            arrayListr.add(GetRndBigintger.generate(100));
-//        }
-//        for (int i = 0; i < 3; i++) {
-//            arrayListr.add(i+4,GetRndBigintger.generate(10));
-//        }
-//        BigInteger T1  = A1.modPow(arrayListr.get(0),PublicParams.n);
-//        BigInteger temp = ppbl.get(2).modPow(arrayListr.get(1),PublicParams.n);
-//        for (int i = 3; i < 10; i++) {
-//            temp = temp.multiply(ppbl.get(i).modPow(arrayListr.get(i-1),PublicParams.n));
-//        }
-//        temp = temp.mod(PublicParams.n);
-//        temp = temp.modInverse(PublicParams.n);
-//        T1 = T1.multiply(temp);
-//        arrayListT.add(T1);
-//
-//        //计算s
-//
-//        arrayListr.clear();
-//        arrayListr.add(GetRndBigintger.generate(100));
-//        arrayListr.add(GetRndBigintger.generate(100));
-//        BigInteger T2 = PublicParams.b1.modPow(arrayListr.get(0),PublicParams.sigma);
-//        T2 = T2.multiply(PublicParams.b2.modPow(arrayListr.get(1),PublicParams.sigma)).mod(PublicParams.sigma);
-//        arrayListT.add(T2);
-//        //计算s
-//
-//        arrayListr.clear();
-//        arrayListr.add(GetRndBigintger.generate(100));
-//        arrayListr.add(GetRndBigintger.generate(alpha.bitLength()));
-//        BigInteger T3 = SN.modPow(arrayListr.get(0),PublicParams.sigma);
-//        T3 = T3.multiply(PublicParams.b2.modPow(arrayListr.get(1),PublicParams.sigma).modInverse(PublicParams.sigma));
-//        arrayListT.add(T3);
-//        //计算s
-//
-//
-//        arrayListr.clear();
-//        arrayListr.add(GetRndBigintger.generate(100));
-//        arrayListr.add(GetRndBigintger.generate(beta.bitLength()));
-//        BigInteger T4 = SN.modPow(arrayListr.get(0),PublicParams.sigma);
-//        T4 = T4.multiply(PublicParams.b1.modPow(arrayListr.get(1),PublicParams.sigma).modInverse(PublicParams.sigma));
-//        arrayListT.add(T4);
-//        //计算s
-//        arrayListr.clear();
-//        arrayListr.add(GetRndBigintger.generate(10));
-//        arrayListr.add(GetRndBigintger.generate(10));
-//        arrayListr.add(GetRndBigintger.generate(m.bitLength()));
-//
-//        BigInteger T5 = PublicParams.a.modPow(ic,PublicParams.n).modPow(arrayListr.get(0),PublicParams.n);
-//        BigInteger temp1 = PublicParams.a.modPow(arrayListr.get(1),PublicParams.n).modPow(arrayListr.get(1),PublicParams.n);
-//        temp1 = temp1.parallelMultiply(PublicParams.a.modPow(K,PublicParams.n).modPow(arrayListr.get(2),PublicParams.n)).modInverse(PublicParams.n);
-//        T5  = T5.parallelMultiply(temp1);
-//        arrayListT.add(T5);
-//        //计算s
-//
-//        arrayListr.clear();
-//        arrayListr.add(GetRndBigintger.generate(secretParams.getE().bitLength()));
-//        secretParams.setE(secretParams.getE().add(secretParams.getD()));
-//        arrayListr.add(GetRndBigintger.generate(secretParams.getE().bitLength()));
-//        arrayListr.add(GetRndBigintger.generate(10));
-//
-//        BigInteger T6 = PublicParams.b.modPow(arrayListr.get(1),PublicParams.sigma);
-//        BigInteger temp2 = PublicParams.b.modPow(arrayListr.get(0),PublicParams.sigma);
-//        temp2 = temp2.parallelMultiply(PublicParams.b.modPow(arrayListr.get(2),PublicParams.sigma));
-//        temp2 = temp2.modInverse(PublicParams.sigma);
-//        T6 = T6.parallelMultiply(temp2);
-//        arrayListT.add(T6);
-//        //计算s
-//        arrayListr.clear();
-//        for (int i = 0; i < 5; i++) {
-//            arrayListr.add(GetRndBigintger.generate(100));
-//        }
-//        for (int i = 0; i < 3; i++) {
-//            arrayListr.add(i+3,GetRndBigintger.generate(10));
-//        }
-//        BigInteger T7  = ppbl.get(2).modPow(arrayListr.get(0),PublicParams.n);
-//        for (int i = 3; i < 10; i++) {
-//            T7 =  T7.multiply(ppbl.get(i).modPow(arrayListr.get(i-2),PublicParams.n));
-//        }
-//        T7 = T7.mod(PublicParams.n);
-//        arrayListT.add(T7);
-
 
 
     }
