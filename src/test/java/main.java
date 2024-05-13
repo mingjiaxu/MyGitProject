@@ -3,9 +3,11 @@ import Client.*;
 import JavaBean.*;
 import Sever.GetSignatureS2CParams;
 import Sever.SignatureVerify;
+import Sever.VerifyKnowledgeSignature;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 /**
@@ -36,7 +38,7 @@ public class main {
         BigInteger w1 = GetRndBigintger.generate(100);
         BigInteger r = GetRndBigintger.generate(100);
 
-        KnowledgeCommitment kc  = GetKnowledgeCommitment.generate(ac,w1,r);
+        KnowledgeCommitment kc  = GetKnowledgeCommitment.generatePart1(ac,w1,r);
 
         BigInteger alpha = kc.getIc().add(ac.getS()).multiply((kc.getIc().add(ac.getT1())).modInverse(PublicParams.k));
         BigInteger beta = kc.getIc().add(ac.getT1()).multiply((kc.getIc().add(ac.getS())).modInverse(PublicParams.k));
@@ -84,33 +86,54 @@ public class main {
         ArrayList<BigInteger> pubParamList7 = Params2List.convert(PublicParams.ax,PublicParams.as,PublicParams.at,PublicParams.ai,PublicParams.ae,PublicParams.ad,PublicParams.h);
         ArrayList<BigInteger> rList7 = SPK.generateRList(secParamList7);
         TList.add(SPK.caculateT_P1(pubParamList7,rList7,PublicParams.n));
-
-
         BigInteger c = SPK.caculateHashC(TList);
-        ArrayList<BigInteger> rList = new ArrayList<>();
-        ArrayList<BigInteger> secParamList = new ArrayList<>();
-        rList.addAll(rList1);
-        rList.addAll(rList2);
-        rList.addAll(rList3);
-        rList.addAll(rList4);
-        rList.addAll(rList5);
-        rList.addAll(rList6);
-        rList.addAll(rList7);
-        secParamList.addAll(secParamList1);
-        secParamList.addAll(secParamList2);
-        secParamList.addAll(secParamList3);
-        secParamList.addAll(secParamList4);
-        secParamList.addAll(secParamList5);
-        secParamList.addAll(secParamList6);
-        secParamList.addAll(secParamList7);
-        ArrayList<BigInteger> sList = SPK.caculateSList(rList,secParamList,c);
+        kc = GetKnowledgeCommitment.generatePart2(kc,ac,c);//最终的知识承诺
 
-        //将挑战列表进行哈希 获取摘要c
-        //计算所有的S
-        //拼接出SPK2
+
+//        ArrayList<BigInteger> rList = new ArrayList<>();
+//        ArrayList<BigInteger> secParamList = new ArrayList<>();
+//        rList.addAll(rList1);
+//        rList.addAll(rList2);
+//        rList.addAll(rList3);
+//        rList.addAll(rList4);
+//        rList.addAll(rList5);
+//        rList.addAll(rList6);
+//        rList.addAll(rList7);
+//        secParamList.addAll(secParamList1);
+//        secParamList.addAll(secParamList2);
+//        secParamList.addAll(secParamList3);
+//        secParamList.addAll(secParamList4);
+//        secParamList.addAll(secParamList5);
+//        secParamList.addAll(secParamList6);
+//        secParamList.addAll(secParamList7);
+        ArrayList<ArrayList<BigInteger>> rList = new ArrayList<>();
+        ArrayList<ArrayList<BigInteger>> secParamList = new ArrayList<>();
+        ArrayList<ArrayList<BigInteger>> pubParamList = new ArrayList<>();
+        rList.add(rList1);
+        rList.add(rList2);
+        rList.add(rList3);
+        rList.add(rList4);
+        rList.add(rList5);
+        rList.add(rList6);
+        rList.add(rList7);
+        secParamList.add(secParamList1);
+        secParamList.add(secParamList2);
+        secParamList.add(secParamList3);
+        secParamList.add(secParamList4);
+        secParamList.add(secParamList5);
+        secParamList.add(secParamList6);
+        secParamList.add(secParamList7);
+        pubParamList.add(pubParamList1);
+        pubParamList.add(pubParamList2);
+        pubParamList.add(pubParamList3);
+        pubParamList.add(pubParamList4);
+        pubParamList.add(pubParamList5);
+        pubParamList.add(pubParamList6);
+        pubParamList.add(pubParamList7);
+        ArrayList<ArrayList<BigInteger>> sList = SPK.caculateSList(rList,secParamList,c);
 
         //验证SPK2
-
+        VerifyKnowledgeSignature.verify(c,kc,pubParamList,sList);
 
     }
 
