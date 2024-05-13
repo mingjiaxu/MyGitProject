@@ -1,5 +1,9 @@
 package Client;
 
+import BaseFunc.Params2List;
+import JavaBean.AnonymousCertificate;
+import JavaBean.PublicParams;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -44,11 +48,25 @@ public class GetKnowledgeCommitment {
         }
         return  J.mod(m);
     }
-
-    public static ArrayList<BigInteger> generate(){
+/**
+ * @param ac: 匿名证书
+ * @param w1: 100bit随机数
+ * @param r: 100bit随机数
+ * @return ArrayList<BigInteger>
+ * @author xjm
+ * @description 计算知识承诺 (A',T,ic，SN,D)
+ * @date 5/13/2024 9:07 AM
+ */
+    public static ArrayList<BigInteger> generate(AnonymousCertificate ac,BigInteger w1,BigInteger r){
         ArrayList<BigInteger> list = new ArrayList<BigInteger>();
-
-
+        BigInteger A1 = ac.getA().parallelMultiply(PublicParams.h.modPow(w1,PublicParams.n));
+        BigInteger T = PublicParams.b1.modPow(ac.getT1(),PublicParams.sigma).multiply(PublicParams.b2.modPow(r,PublicParams.sigma)).mod(PublicParams.sigma);
+        BigInteger ic = ac.getI().add((ac.getE().add(ac.getD())).modInverse(PublicParams.k));
+        BigInteger SN = (PublicParams.b1.modPow((ic.add(ac.getS())).modInverse(PublicParams.k),PublicParams.sigma)).multiply(PublicParams.b2.modPow((ic.add(ac.getT1())).modInverse(PublicParams.k),PublicParams.sigma)).mod(PublicParams.sigma);
+        BigInteger w2 = ac.getW().add(ac.getY().multiply(w1));
+        ArrayList<BigInteger> baseNumList = Params2List.convert(PublicParams.a,PublicParams.ax, PublicParams.as,PublicParams.at,PublicParams.ai,PublicParams.ae,PublicParams.ad,PublicParams.h);
+        ArrayList<BigInteger> exponentList = Params2List.convert(ac.getX(),ac.getS(),ac.getT1(),ac.getI(),ac.getE(),ac.getD(),w2);
+        BigInteger D = generate(baseNumList,exponentList,PublicParams.n);
         return list;
     }
 
