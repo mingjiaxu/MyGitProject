@@ -15,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class GetHash {
     /**
-     * @param T:挑战
+     * @param T:Message wait for get digest
      * @return BigInteger
      * @author xjm
      * @description 对一个BigInteger 进行hash运算，最后返回Biginteger
