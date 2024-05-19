@@ -44,10 +44,16 @@ public class GetCommitmentAndSignature {
         ArrayList<BigInteger> R = new ArrayList<BigInteger>();
         ArrayList<BigInteger> T = new ArrayList<BigInteger>();
         //生成SPK中的随机数
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 5; i++) {
             BigInteger r = GetRndBigintger.generate(100);
             R.add(r);
         }
+        for (int i = 0; i < 3; i++) {
+            BigInteger r = GetRndBigintger.generate(10);
+            R.add(r);
+        }
+        R.add(GetRndBigintger.generate(100));
+
 
         T.add(PublicParams.b.modPow(R.get(0),PublicParams.sigma));  //b^r1 mod sigma
         T.add(PublicParams.b.modPow(R.get(1),PublicParams.sigma));  //b^r2 mod sigma

@@ -21,6 +21,14 @@ public class SecretParams {
     private BigInteger d;
     private BigInteger w;
     private BigInteger pku;
+    private BigInteger r;
+    private BigInteger w1;      //w*
+    private BigInteger alpha;
+    private BigInteger beta;
+    private BigInteger m;
+    private BigInteger ec;
+
+
     public SecretParams() {
     }
 
@@ -94,5 +102,53 @@ public class SecretParams {
 
     public void setPku(BigInteger pku) {
         this.pku = pku;
+    }
+
+    public BigInteger getR() {
+        return r;
+    }
+
+    public void setR(BigInteger r) {
+        this.r = r;
+    }
+
+    public BigInteger getW1() {
+        return w1;
+    }
+
+    public void setW1(BigInteger w1) {
+        this.w1 = w1;
+    }
+
+    public BigInteger getAlpha() {
+        return alpha;
+    }
+
+    public void setAlpha(BigInteger alpha) {
+        this.alpha = alpha;
+    }
+
+    public BigInteger getBeta() {
+        return beta;
+    }
+
+    public void setBeta(BigInteger beta) {
+        this.beta = beta;
+    }
+
+    public BigInteger getM() {
+        return m;
+    }
+
+    public void setM(BigInteger m) {
+        this.m = m;
+    }
+
+    public BigInteger getEc() {
+        return ec;
+    }
+
+    public void setEc(BigInteger ec) {
+        this.ec = ec;
     }
 }

@@ -109,4 +109,20 @@ public class Params2List {
         list.add(g);
         return list;
     }
+    /**
+     * @description 同上
+     * @date 5/12/2024 10:22 PM
+     */
+    public static ArrayList<BigInteger> convert(BigInteger a,BigInteger b,BigInteger c,BigInteger d,BigInteger e,BigInteger f,BigInteger g,BigInteger h){
+        ArrayList<BigInteger> list = new ArrayList<BigInteger>();
+        list.add(a);
+        list.add(b);
+        list.add(c);
+        list.add(d);
+        list.add(e);
+        list.add(f);
+        list.add(g);
+        list.add(h);
+        return list;
+    }
 }

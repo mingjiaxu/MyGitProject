@@ -18,6 +18,8 @@ public class KnowledgeCommitment {
     private BigInteger ic;
     private BigInteger SN;
     private BigInteger D;
+    private BigInteger R1;
+    private BigInteger R2;
 
     public KnowledgeCommitment(){
     }
@@ -60,5 +62,21 @@ public class KnowledgeCommitment {
 
     public void setD(BigInteger d) {
         D = d;
+    }
+
+    public BigInteger getR1() {
+        return R1;
+    }
+
+    public void setR1(BigInteger r1) {
+        R1 = r1;
+    }
+
+    public BigInteger getR2() {
+        return R2;
+    }
+
+    public void setR2(BigInteger r2) {
+        R2 = r2;
     }
 }

@@ -1,8 +1,9 @@
 package Client;
 
-import JavaBean.AnonymousCertificate;
-import JavaBean.SecretParams;
-import JavaBean.SignatureS2CParams;
+import BaseFunc.GetRndBigintger;
+import JavaBean.*;
+
+import java.math.BigInteger;
 
 /**
  * @projectName: MyProject
@@ -27,5 +28,19 @@ public class GetAnonymousCertificate {
         ac.setD(sp1.getD());
         ac.setW(sp1.getW());
         return ac;
+    }
+    public static void generate(AnonymousCertificate ac){
+        ac.setR(GetRndBigintger.generate(100));
+        ac.setW1(GetRndBigintger.generate(100));
+    }
+    public static void generate(KnowledgeCommitment kc, AnonymousCertificate ac){
+        BigInteger alpha = kc.getIc().add(ac.getS()).multiply((kc.getIc().add(ac.getT1())).modInverse(PublicParams.q1)).mod(PublicParams.q1);
+        BigInteger beta = (kc.getIc().add(ac.getT1())).multiply((kc.getIc().add(ac.getS())).modInverse(PublicParams.q1)).mod(PublicParams.q1);
+        BigInteger m = kc.getIc().multiply(ac.getE()).subtract(ac.getI().multiply(ac.getE()).subtract(BigInteger.ONE)).divide(PublicParams.k);
+        BigInteger ec = ac.getE().add(ac.getD());
+        ac.setBeta(beta);
+        ac.setAlpha(alpha);
+        ac.setM(m);
+        ac.setEc(ec);
     }
 }

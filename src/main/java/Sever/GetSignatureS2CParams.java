@@ -1,6 +1,6 @@
 package Sever;
 
-import JavaBean.CommitAndSignature;
+import JavaBean.CommitmentAndSignature;
 import JavaBean.SignatureS2CParams;
 
 import java.math.BigInteger;
@@ -23,7 +23,7 @@ public class GetSignatureS2CParams {
      * @description 对用户秘密参数签名，返回签名及用于签名的参数
      * @date 5/10/2024 10:05 PM
      */
-    public static SignatureS2CParams generate(CommitAndSignature cas){
+    public static SignatureS2CParams generate(CommitmentAndSignature cas){
         SignatureS2CParams signatureS2CParams = new SignatureS2CParams();
         Random rnd = new Random();
         BigInteger y = BigInteger.probablePrime(100,rnd);
